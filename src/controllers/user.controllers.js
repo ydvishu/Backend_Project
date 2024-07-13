@@ -17,11 +17,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // if data is coming from any form or josn then it will appear in the req.body
     const {username, fullName, email, password } = req.body
-    console.log( "email: ", email) ;
+    // console.log( "email: ", email) ;
 
     // Validation
     if(
-        [fullName, username,email, password].some((field)=> field?.trim === "")
+        [fullName, username, email, password].some((field)=> field?.trim === "")
     ){
         throw new ApiError(400, "All fields are required");
     }
@@ -33,7 +33,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
 
     // if already exist
-    const existedUse = User.findOne({
+    const existedUser = await User.findOne({
         $or: [{ username },{ email }]
     })
     
@@ -41,13 +41,19 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(409, "User with email or username already exist")
     }
 
-    // 
+    // Check for avatar and coverImage files
+    console.log("req.files: ", req.files);
     const avatarLocalPath = req.files?.avatar[0]?.path ;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path ;
-    path;
+    // const coverImageLocalPath = req.files?.coverImage[0]?.path ;
+
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0){
+        coverImageLocalPath =req.files.coverImage[0].path
+    }
+    
 
     if(!avatarLocalPath){
-        throw new ApiError(400, "Avatar file is required");
+        throw new ApiError(400, "Avatar file path is required");
     }
 
     const avatar = await uploadOnCloudinary(avatarLocalPath)
