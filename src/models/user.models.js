@@ -73,6 +73,7 @@ userSchema.methods.generateAccessToken = function(){
         }
     )
 }
+
 userSchema.methods.generateRefreshToken = function(){
     return jwt.sign(
         {
@@ -81,7 +82,7 @@ userSchema.methods.generateRefreshToken = function(){
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+            expiresIn: process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }
