@@ -28,6 +28,37 @@ const uploadOnCloudinary = async (localFilePath) => {
         fs.unlinkSync(localFilePath)        // remove the locally saved temporary file as the upload operation failed
         return null 
     }
+};
+
+const deleteFromCloudinary = async (contentId, contentType) => {
+  try {
+    // delete the file from cloudinary
+    const response = await cloudinary.api.delete_resources([contentId], {
+      type: 'upload',
+      resource_type: contentType,
+    });
+
+    return response;
+  } catch (error) {
+    console.log('🚀 ~ deleteFromCloudinary ~ error:', error);
+
+    throw new Error('Failed to delete content from Cloudinary');
+  }
+};
+
+// get the cloudinary id of content from url
+const getCloudinaryId = (contentUrl) => {
+  if (!contentUrl) return '';
+
+  return contentUrl
+    .split('/')
+    .pop()
+    .replace(/\.[^.]+$/, '');
+};
+
+export {uploadOnCloudinary,
+    deleteFromCloudinary,
+    getCloudinaryId
 }
 
-export {uploadOnCloudinary}
+// first of all we upload file through multer on the local storage and then have uploaded it on cloudnary 
