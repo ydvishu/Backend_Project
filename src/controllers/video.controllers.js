@@ -1,4 +1,4 @@
-import mongoose, {isValidObjectId} from "mongoose"
+import mongoose, {Types, isValidObjectId} from "mongoose"
 import {Video} from "../models/video.models.js"
 import {User} from "../models/user.models.js"
 import {ApiError} from "../utils/ApiError.js"
@@ -110,7 +110,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 
 const uploadVideo = asyncHandler(async (req, res, next) => {
     const { title, description } = req.body;
-
+    
     // Validate title and description
     if (!title || typeof title !== 'string') {
         return next(
@@ -133,6 +133,19 @@ const uploadVideo = asyncHandler(async (req, res, next) => {
         );
     }
 
+     // Ensure req.files is defined
+    //  if (!req.files || !req.files.videoFile || !req.files.thumbnail) {
+    //     return next(
+    //         new ApiError(
+    //              400,
+    //              'Validation Error',
+    //              ['No files were uploaded'],
+    //              'Please upload both a video file and a thumbnail'
+    //         )
+    //     );
+    // }
+        
+        console.log(req.files.thumbnail[0]);
     // Check for video file
     const videoFileLocalPath = req.files?.videoFile[0]?.path;
     if (!videoFileLocalPath) {
@@ -147,7 +160,7 @@ const uploadVideo = asyncHandler(async (req, res, next) => {
     }
 
     // Check for video thumbnail
-    const videoThumbnailLocalPath = req.files?.videoThumbnail[0]?.path;
+    const videoThumbnailLocalPath = req.files?.thumbnail[0]?.path;
     if (!videoThumbnailLocalPath) {
         return next(
             new ApiError(
@@ -163,7 +176,7 @@ const uploadVideo = asyncHandler(async (req, res, next) => {
         // Upload video file and thumbnail to Cloudinary
         const videoFile = await uploadOnCloudinary(videoFileLocalPath);
         const videoThumbnail = await uploadOnCloudinary(videoThumbnailLocalPath);
-
+        
         if (!videoFile || !videoThumbnail) {
             return next(
                 new ApiError(
@@ -208,7 +221,8 @@ const uploadVideo = asyncHandler(async (req, res, next) => {
             )
         );
     } catch (error) {
-        // Handle unexpected errors
+        // Handle unexpected errors        
+        console.error('Error occurred during video upload:', error); // Log the full error
         return next(
             new ApiError(
                 500,
@@ -224,6 +238,9 @@ const getVideoById = asyncHandler(async (req, res, next) => {
     const { videoId } = req.params;
 
     // Check if the videoId is valid
+
+// console.log('Video ID:', videoId);
+
     if (!isValidObjectId(videoId)) {
         const error = CustomError.badRequest({
             message: 'Validation Error',
