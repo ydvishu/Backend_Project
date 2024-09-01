@@ -66,11 +66,11 @@ const toggleSubscription = asyncHandler(async (req, res, next) => {
 
 // Controller to return subscriber list of a channel
 const getUserChannelSubscribers = asyncHandler(async (req, res, next) => {
-    const { channelId } = req.params;
+    const { subscriberId } = req.params;
 
     // Check valid channelId
-    console.log(channelId);
-    if (!isValidObjectId(channelId)) {
+    console.log(subscriberId);
+    if (!isValidObjectId(subscriberId)) {
         return next(ApiError.badRequest({
             message: "Validation Error",
             errors: ["Invalid Channel ID"],
@@ -80,7 +80,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res, next) => {
 
     // Aggregate to get subscriber list
     const subscriberList = await Subscription.aggregate([
-        { $match: { channel: Types.ObjectId.createFromHexString(channelId) } },
+        { $match: { channel: Types.ObjectId.createFromHexString(subscriberId) } },
         {
             $lookup: {
                 from: 'users',
@@ -111,10 +111,10 @@ const getUserChannelSubscribers = asyncHandler(async (req, res, next) => {
 
 // Controller to return channel list to which user has subscribed
 const getSubscribedChannels = asyncHandler(async (req, res, next) => {
-    const { subscriberId } = req.params;
+    const { channelId } = req.params;
 
     // Check valid subscriberId
-    if (!isValidObjectId(subscriberId)) {
+    if (!isValidObjectId(channelId)) {
         return next(ApiError.badRequest({
             message: "Validation Error",
             errors: ["Invalid Subscriber ID"],
@@ -124,7 +124,7 @@ const getSubscribedChannels = asyncHandler(async (req, res, next) => {
 
     // Aggregate to get subscribed channel list
     const channelList = await Subscription.aggregate([
-        { $match: { subscriber: Types.ObjectId.createFromHexString(subscriberId) } },
+        { $match: { subscriber: Types.ObjectId.createFromHexString(channelId) } },
         {
             $lookup: {
                 from: 'users',
