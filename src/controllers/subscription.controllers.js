@@ -69,7 +69,7 @@ const getUserChannelSubscribers = asyncHandler(async (req, res, next) => {
     const { subscriberId } = req.params;
 
     // Check valid channelId
-    console.log(subscriberId);
+    // console.log(subscriberId);
     if (!isValidObjectId(subscriberId)) {
         return next(ApiError.badRequest({
             message: "Validation Error",

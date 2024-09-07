@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Backend",
   "type": "module",
-  "main": "index.js",
+  "main": "index.js",  
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js",
+    "vercel-build": "echo hello"
   },
   "keywords": [
     "javascript",
